@@ -1,0 +1,44 @@
+#!/bin/sh
+JAVA_HOME=/usr/local/jdk1.8.0_121
+CLASSPATH=.:$JAVA_HOME/lib.tools.jar
+PATH=$JAVA_HOME/bin:$PATH
+export JAVA_HOME CLASSPATH PATH
+export HADOOP_HOME=/root/bigdata/hadoop
+export PATH=${HADOOP_HOME}/bin:${HADOOP_HOME}/sbin:$PATH
+Folder_A="/root/test/"    
+Output_file="/root/extra/output.txt" 
+Input_file="/root/extra/output.txt"
+: > $Output_file                                                                                                                                              
+for file_a in ${Folder_A}/*  
+do    
+    temp_file=`basename $file_a` 
+      FileName=${temp_file%.*}  
+       filename=${temp_file##*_}
+       Filename=${filename%.*}
+    echo $Filename >> $Output_file    
+     if [ "$Filename" -eq 1 ]; 
+    then  
+       hadoop fs -mkdir -p /normal/$FileName
+        hadoop fs -put $file_a /normal/$FileName/$temp_file
+     fi
+      if [ "$Filename" -eq 0 ];
+    then
+      hadoop fs -mkdir -p  /slow/$FileName
+        hadoop fs -put $file_a /slow/$FileName/$temp_file
+     fi
+       if [ "$Filename" -eq 2 ];
+    then
+      hadoop fs -mkdir -p /DDOS/$FileName
+        hadoop fs -put $file_a /DDOS/$FileName/$temp_file
+     fi
+        if [ "$Filename" -eq 3 ];
+    then
+      hadoop fs -mkdir -p  /BP/$FileName
+        hadoop fs -put $file_a /BP/$FileName/$temp_file
+     fi
+        if [ "$Filename" -eq 4 ];
+    then
+      hadoop fs -mkdir -p /ZK/$temp_file
+        hadoop fs -put $file_a /ZK/$FileName/$temp_file
+     fi
+done
